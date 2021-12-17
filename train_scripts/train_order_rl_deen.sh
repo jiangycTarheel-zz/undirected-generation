@@ -1,0 +1,39 @@
+export PYTHONWARNINGS="ignore";
+export NGPU=1; CUDA_VISIBLE_DEVICES=0 python3 -W ignore -m torch.distributed.launch --nproc_per_node=$NGPU train.py  \
+    --exp_name learned_order_deen_uniform_4gpu \
+    --run_id 00 \
+    --dump_path models \
+    --data_path data/de-en \
+    --lgs 'de-en' \
+    --order_pred_rl_steps 'de-en'\
+    --clm_steps '' \
+    --mlm_steps '' \
+    --reload_model models/best-valid_de-en_mt_bleu.pth \
+    --emb_dim 1024 \
+    --n_layers 6 \
+    --n_heads 8 \
+    --dropout 0.1 \
+    --attention_dropout 0.1 \
+    --gelu_activation true \
+    --batch_size 32 \
+    --bptt 128 \
+    --optimizer adam,beta1=0.9,beta2=0.98,lr=0.0001 \
+    --epoch_size 100000 \
+    --word_pred_uniform \
+    --eval_bleu true \
+    --mt_steps "de-en,en-de" \
+    --validation_metrics valid_de-en_mt_bleu,valid_en-de_mt_bleu \
+    --stopping_criterion valid_de-en_mt_bleu,800 \
+    --predict_order true \
+    --fp16 true \
+    --generation_model_cpu true \
+    --save_ckpt_period 2000 \
+    --max_len 30 \
+    --min_len 5 \
+    --discount_factor 0.99 \
+    --separate_order_model false \
+    --order_pred_layer_type 2l_mlp \
+    --rl_baseline "state_value" \
+    --entropy_penalty true \
+    --entropy_coeff 0.0001 \
+    --reward_fn model_scores
